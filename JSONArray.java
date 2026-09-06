@@ -1,19 +1,33 @@
+package json;
 import java.util.ArrayList;
+import java.util.Iterator;
 
-public class JSONArray extends JSONValue {
+public class JSONArray extends JSONValue implements Iterable<JSONValue> {
 	ArrayList<JSONValue> arr = new ArrayList<>();
 	
 	protected JSONArray(String text) {
 		super(text);
-		ArrayList<String> values = JSONParser.split(text.substring(1, text.length() - 1));
-		for (String value: values) {
-			arr.add(JSONParser.parseJSON(value));
+		if (text.length() != 2) { // check not empty
+			ArrayList<String> values = JSONParser.split(text.substring(1, text.length() - 1));
+			for (String value: values) {
+				arr.add(JSONParser.parseJSON(value));
+			}
 		}
 	}
 	
 	@Override
-	public JSONValue get(String index) {
-		return arr.get(Integer.valueOf(index));
+	public int size() {
+		return arr.size();
+	}
+	
+	@Override
+	public JSONValue get(int index) {
+		return arr.get(index);
+	}
+	
+	@Override
+	public JSONValue get(String str) {
+		throw new IllegalArgumentException("Tried to get from a JSON array with a string.");
 	}
 	
 	@Override
@@ -24,8 +38,15 @@ public class JSONArray extends JSONValue {
 			sb.append(arr.get(i).toString());
 			sb.append(",");
 		}
-		sb.append(arr.getLast());
+		if (arr.size() != 0) {
+			sb.append(arr.getLast());
+		}
 		sb.append("]");
 		return sb.toString();
+	}
+
+	@Override
+	public Iterator<JSONValue> iterator() {
+		return arr.iterator();
 	}
 }

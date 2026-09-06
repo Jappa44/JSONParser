@@ -1,3 +1,4 @@
+package json;
 import java.util.ArrayList;
 
 public class JSONParser {
@@ -28,18 +29,43 @@ public class JSONParser {
 		int depth = 0;
 		char[] chars = str.toCharArray();
 		char c;
+		boolean insideString = false;
 		for (int i = 0; i < chars.length; i++) {
 			c = chars[i];
-			if (c == '{' || c == '[') {
-				depth++;
-			} else if (c == '}' || c == ']') {
-				depth--;
-			} else if (c == ',' && depth == 0) {
-				arr.add(i);
+			if (isUnescapedQuotationMark(str, i)) {
+				insideString = !insideString;
+			}
+			
+			if (!insideString) {
+				if (c == '{' || c == '[') {
+					depth++;
+				} else if (c == '}' || c == ']') {
+					depth--;
+				} else if (c == ',' && depth == 0) {
+					arr.add(i);
+				}
+			}
+			
+			if (depth < 0) {
+				throw new IllegalStateException("Depth less than zero, substring: " + str.substring(i));
+			} else if (depth > 0 && i == chars.length - 1) {
+				throw new IllegalStateException("Problem parsing items. Depth was greater than zero at end of reading.");
 			}
 		}
 		
 		return arr;
+	}
+	
+	public static boolean isUnescapedQuotationMark(String str, int i) {
+		if (str.charAt(i) == '"') {
+			if (i == 0 || str.charAt(i - 1) != '\\') {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 	
 	protected static ArrayList<String> split(String str) {
