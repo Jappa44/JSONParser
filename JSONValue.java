@@ -74,6 +74,26 @@ public class JSONValue {
 		throw new IllegalArgumentException("Tried to get the size of a base level JSON value, such as a String, boolean, or number");
 	}
 	
+	public int toInt() {
+		return Integer.valueOf(this.toString());
+	}
+	
+	public double toDouble() {
+		return Double.valueOf(this.toString());
+	}
+	
+	public boolean toBoolean() {
+		return Boolean.valueOf(this.toString());
+	}
+	
+	public boolean isNull() {
+		if (this.toString() == "null") {
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
 	@Override
 	public String toString() {
 		return value;
